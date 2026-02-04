@@ -62,7 +62,7 @@ Valor
 
 Evita duplicação de código.
 
-⚙️ Pré-requisitos
+- Pré-requisitos
 
 Java 17+
 
