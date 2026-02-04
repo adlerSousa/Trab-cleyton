@@ -24,8 +24,8 @@ public class OrderProducer {
 
         OrderEvent event = new OrderEvent(
                 UUID.randomUUID().toString(),
-                "João",
-                "Pizzaria Napoli",
+                "Ayler",
+                "PK pizzaria",
                 79.90
         );
 
