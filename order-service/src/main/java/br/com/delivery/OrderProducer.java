@@ -36,6 +36,6 @@ public class OrderProducer {
         producer.send(record);
         producer.close();
 
-        System.out.println("✅ Pedido publicado no Kafka!");
+        System.out.println("Pedido publicado no Kafka!");
     }
 }
