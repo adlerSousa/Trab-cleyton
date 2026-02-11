@@ -1,114 +1,98 @@
-# delivery-pubsub-kafka
+# 🛵 Delivery System - Kafka Pub/Sub Architecture
 
-Projeto: Sistema de Pedidos com Kafka (Arquitetura de Eventos)
+Este projeto implementa uma Coreografia de Microserviços baseada na arquitetura Publish-Subscriber utilizando Apache Kafka. O sistema simula o fluxo completo de um pedido de delivery, desde a criação até a entrega final, garantindo o desacoplamento total entre os serviços.
 
-Este projeto simula o fluxo de um aplicativo de delivery usando microsserviços e Apache Kafka para comunicação assíncrona entre serviços.
+**Trabalho Final - Projeto de Sistemas de Software (2025-2)**  
+Tema 4: Arquitetura Publish–subscriber com exemplo usando Apache Kafka.
 
-Objetivo
+## 🏗️ Arquitetura do Sistema
 
-Demonstrar:
+A comunicação entre os serviços é puramente assíncrona. Nenhum serviço conhece o endpoint do outro; eles apenas reagem a eventos publicados em tópicos específicos do Kafka.
 
-Comunicação entre microsserviços
+### Fluxo de Eventos:
+- **order-created**: Publicado pelo order-service ao realizar um pedido.
+- **pedido-aprovado**: Publicado pelo restaurant-service após simular o preparo.
+- **pedido-pago**: Publicado pelo payment-service após confirmar a transação.
+- **Finalização**: O delivery-service consome o evento de pagamento e despacha o entregador.
 
-Arquitetura orientada a eventos
+## 🛠️ Tecnologias Utilizadas
+- **Linguagem**: Java 20 (Record types, Modern Switch, etc.)
+- **Gerenciamento de Dependências**: Apache Maven
+- **Mensageria**: Apache Kafka (executando via Docker)
+- **Serialização**: Jackson (JSON)
 
-Uso do Kafka como mensageria
+## 🚀 Como Executar
 
-Desacoplamento entre serviços
+1. **Clonar e Acessar o Projeto**
+    ```bash
+    git clone https://github.com/SeuUsuario/delivery-pubsub-kafka.git
+    cd delivery-pubsub-kafka
+    ```
 
-Arquitetura do Sistema
+2. **Subir a Infraestrutura (Docker)**
+   O projeto inclui um `docker-compose.yml` com as imagens da Confluent para o Kafka e Zookeeper.
+    ```bash
+    docker-compose up -d
+    ```
+   Aguarde cerca de 15 segundos para o broker inicializar completamente.
 
-Fluxo do pedido:
+3. **Instalar o Módulo Comum**
+   Este passo é obrigatório, pois todos os microserviços dependem do objeto `OrderEvent` definido aqui.
+    ```bash
+    cd delivery-common
+    mvn clean install
+    cd ..
+    ```
 
-Order Service  →  Restaurant Service  →  Payment Service  →  Delivery Service
-   (cria)           (aprova)              (paga)              (entrega)
+4. **Executar os Serviços (Subscribers)**
+   Abra terminais diferentes para cada comando abaixo para visualizar os logs de cada serviço:
+
+   **Restaurante:**
+    ```bash
+    cd restaurant-service && mvn exec:java -Dexec.mainClass="com.delivery.RestaurantConsumer"
+    ```
+
+   **Pagamento:**
+    ```bash
+    cd payment-service && mvn exec:java -Dexec.mainClass="com.delivery.PayConsumer"
+    ```
+
+   **Entrega:**
+    ```bash
+    cd delivery-service && mvn exec:java -Dexec.mainClass="com.delivery.DeliveryConsumer"
+    ```
+
+5. **Simular um Pedido (Publisher)**
+   Com os consumidores rodando, execute o produtor para iniciar a coreografia:
+    ```bash
+    cd order-service && mvn exec:java -Dexec.mainClass="br.com.delivery.OrderProducer"
+    ```
+
+## 📂 Estrutura de Pastas
+```text
+├── delivery-common/      # Classe OrderEvent compartilhada
+├── delivery-service/     # Consome 'pedido-pago'
+├── order-service/        # Produz 'order-created' (Ponto de entrada)
+├── payment-service/      # Consome 'pedido-aprovado' e produz 'pedido-pago'
+├── restaurant-service/   # Consome 'order-created' e produz 'pedido-aprovado'
+└── docker-compose.yml    # Infraestrutura do Kafka
+```
 
 
-Cada etapa publica um evento no Kafka.
+## 🧠 Decisões Técnicas & S.O.L.I.D
+Single Responsibility Principle: Cada microserviço é responsável por apenas uma etapa do domínio de negócio (Pedido, Cozinha, Financeiro, Logística).
 
-Serviços Criados
-Serviço	Função	Tópico que ESCUTA	Tópico que PUBLICA
-order-service	Cria o pedido	—	pedido-criado
-restaurant-service	Aprova pedido	pedido-criado	pedido-aprovado
-payment-service	Processa pagamento	pedido-aprovado	pedido-pago
-delivery-service	Realiza entrega	pedido-pago	—
-Estrutura dos Projetos
+Dependency Inversion: Os serviços dependem da abstração do evento no Kafka, e não de implementações concretas de outros serviços.
 
-Todos são projetos Maven:
+Resiliência: Se o delivery-service estiver offline, as mensagens de pagamento aprovado ficam retidas no Kafka e são processadas automaticamente assim que o serviço retornar.
 
-delivery-pubsub-kafka/
-│
-├── delivery-common      → Classe compartilhada OrderEvent
-├── order-service        → Produtor inicial
-├── restaurant-service   → Consumer + Produtor
-├── payment-service      → Consumer + Produtor
-└── delivery-service     → Consumer final
+## 👥 Equipe
+Adler Amorim de Sousa - [Matrícula]
 
-Classe Compartilhada
+Ayler  - [Matrícula]
 
-Arquivo comum para todos os serviços:
+Integrante 3 - [Matrícula]
 
-delivery-common → OrderEvent.java
+Integrante 4 - [Matrícula]
 
-Contém os dados do pedido:
-
-ID
-
-Cliente
-
-Restaurante
-
-Valor
-
-Evita duplicação de código.
-
-- Pré-requisitos
-
-Java 17+
-
-Maven
-
-Apache Kafka rodando
-
-Zookeeper rodando
-
-Como Iniciar o Sistema
-
-A ordem é MUITO IMPORTANTE
-
-1 — Restaurant Service
-cd restaurant-service
-mvn compile exec:java "-Dexec.mainClass=com.delivery.RestaurantConsumer"
-
-2 — Payment Service
-cd payment-service
-mvn compile exec:java "-Dexec.mainClass=com.delivery.PayConsumer"
-
-3 — Delivery Service
-cd delivery-service
-mvn compile exec:java "-Dexec.mainClass=com.delivery.DeliveryConsumer"
-
-4 — Order Service (Dispara o fluxo)
-cd order-service
-mvn clean compile exec:java "-Dexec.mainClass=br.com.delivery.OrderProducer"
-
-- O Que Acontece Quando Roda
-
-Um pedido percorre todo o sistema:
-
-Order Service cria o pedido
-
-Restaurant recebe e aprova
-
-Payment processa pagamento
-
-Delivery envia para entrega
-
-- Conceitos Demonstrados
-
-- Arquitetura orientada a eventos
-- Comunicação assíncrona
-- Pub/Sub com Kafka
-- Desacoplamento de serviços
-- Serialização JSON
-- Compartilhamento de modelo via módulo comum
+Guilherme - [Matrícula]
