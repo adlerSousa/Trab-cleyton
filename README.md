@@ -85,14 +85,3 @@ Single Responsibility Principle: Cada microserviço é responsável por apenas u
 Dependency Inversion: Os serviços dependem da abstração do evento no Kafka, e não de implementações concretas de outros serviços.
 
 Resiliência: Se o delivery-service estiver offline, as mensagens de pagamento aprovado ficam retidas no Kafka e são processadas automaticamente assim que o serviço retornar.
-
-## 👥 Equipe
-Adler Amorim de Sousa - [Matrícula]
-
-Ayler  - [Matrícula]
-
-Integrante 3 - [Matrícula]
-
-Integrante 4 - [Matrícula]
-
-Guilherme - [Matrícula]
