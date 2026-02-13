@@ -2,6 +2,10 @@ package br.com.delivery;
 
 import com.delivery.OrderEvent;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
@@ -15,6 +19,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @RestController
 @RequestMapping("/pedidos")
+@Tag(name = "Pedidos", description = "Endpoints para criação e acompanhamento de pedidos via Kafka")
 public class OrderController {
 
     private final KafkaProducer<String, String> producer;
@@ -33,6 +38,10 @@ public class OrderController {
     }
 
     @PostMapping
+    @Operation(
+        summary = "Cria um novo pedido", 
+        description = "Gera um UUID para o pedido, salva na memória local com status 'CRIADO' e publica no tópico 'order-created' do Kafka."
+    )
     public OrderEvent criarPedido(@RequestBody OrderEvent pedido) throws Exception {
         if (pedido.getOrderId() == null) pedido.setOrderId(UUID.randomUUID().toString());
         
@@ -47,6 +56,10 @@ public class OrderController {
     }
 
     @GetMapping("/{id}")
+    @Operation(
+        summary = "Consulta o status de um pedido", 
+        description = "Busca na base de dados em memória o status atualizado do pedido. O status pode mudar conforme os microserviços processam os eventos."
+    )
     public String consultarStatus(@PathVariable String id) {
         return "Status do Pedido (" + id + "): " + baseDeDadosPedidos.getOrDefault(id, "NÃO ENCONTRADO");
     }
