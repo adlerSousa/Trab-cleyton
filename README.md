@@ -1,11 +1,11 @@
-# 🛵 Delivery System - Kafka Pub/Sub Architecture
+# Delivery System - Kafka Pub/Sub Architecture
 
 Este projeto implementa uma Coreografia de Microserviços baseada na arquitetura Publish-Subscriber utilizando Apache Kafka. O sistema simula o fluxo completo de um pedido de delivery, desde a criação até a entrega final, garantindo o desacoplamento total entre os serviços.
 
 **Trabalho Final - Projeto de Sistemas de Software (2025-2)**  
 Tema 4: Arquitetura Publish–subscriber com exemplo usando Apache Kafka.
 
-## 🏗️ Arquitetura do Sistema
+## Arquitetura do Sistema
 
 A comunicação entre os serviços é puramente assíncrona. Nenhum serviço conhece o endpoint do outro; eles apenas reagem a eventos publicados em tópicos específicos do Kafka.
 
@@ -21,7 +21,7 @@ A comunicação entre os serviços é puramente assíncrona. Nenhum serviço con
 - **Mensageria**: Apache Kafka (executando via Docker)
 - **Serialização**: Jackson (JSON)
 
-## 🚀 Como Executar
+## Como Executar
 
 1. **Clonar e Acessar o Projeto**
     ```bash
@@ -68,7 +68,7 @@ A comunicação entre os serviços é puramente assíncrona. Nenhum serviço con
     cd order-service && mvn exec:java -Dexec.mainClass="br.com.delivery.OrderProducer"
     ```
 
-## 📂 Estrutura de Pastas
+## Estrutura de Pastas
 ```text
 ├── delivery-common/      # Classe OrderEvent compartilhada
 ├── delivery-service/     # Consome 'pedido-pago'
@@ -79,7 +79,7 @@ A comunicação entre os serviços é puramente assíncrona. Nenhum serviço con
 ```
 
 
-## 🧠 Decisões Técnicas & S.O.L.I.D
+## Decisões Técnicas & S.O.L.I.D
 Single Responsibility Principle: Cada microserviço é responsável por apenas uma etapa do domínio de negócio (Pedido, Cozinha, Financeiro, Logística).
 
 Dependency Inversion: Os serviços dependem da abstração do evento no Kafka, e não de implementações concretas de outros serviços.
