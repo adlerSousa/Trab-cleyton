@@ -18,8 +18,10 @@ A comunicação entre os serviços é puramente assíncrona. Nenhum serviço con
 ## Tecnologias Utilizadas
 - **Linguagem**: Java 20 (Record types, Modern Switch, etc.)
 - **Gerenciamento de Dependências**: Apache Maven
+- **Framework**: Spring Boot 3+
 - **Mensageria**: Apache Kafka (executando via Docker)
 - **Serialização**: Jackson (JSON)
+- **Documentação**: Swagger / OpenAPI 3
 
 ## Como Executar
 
