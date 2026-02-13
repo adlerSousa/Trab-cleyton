@@ -1,19 +1,16 @@
 package com.delivery;
 
-import java.util.Collections;
+import java.util.Arrays; // Mudamos para Arrays para assinar mais de um tópico
 import java.util.Properties;
 import java.time.Duration;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
-import com.delivery.OrderEvent;
 import org.apache.kafka.clients.producer.*;
 import org.apache.kafka.common.serialization.StringSerializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class RestaurantConsumer {
-
-    private static final String TOPIC = "order-created";
 
     public static void main(String[] args) throws Exception {
 
@@ -25,11 +22,10 @@ public class RestaurantConsumer {
         props.put("auto.offset.reset", "earliest");
 
         KafkaConsumer<String, String> consumer = new KafkaConsumer<>(props);
-        consumer.subscribe(Collections.singletonList(TOPIC));
+        
+        consumer.subscribe(Arrays.asList("order-created", "pedido-cancelado"));
 
         ObjectMapper mapper = new ObjectMapper();
-
-        System.out.println("Restaurante aguardando pedidos...");
 
         Properties producerProps = new Properties();
         producerProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
@@ -38,26 +34,28 @@ public class RestaurantConsumer {
 
         KafkaProducer<String, String> producer = new KafkaProducer<>(producerProps);
 
+        System.out.println("Restaurante operando e aguardando eventos...");
+
         while (true) {
             ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(100));
 
             for (ConsumerRecord<String, String> record : records) {
                 OrderEvent event = mapper.readValue(record.value(), OrderEvent.class);
 
-                System.out.println("Pedido recebido:");
-                System.out.println("ID: " + event.getOrderId());
-                System.out.println("Cliente: " + event.getCustomerName());
-                System.out.println("Restaurante: " + event.getRestaurant());
-                System.out.println("Preparando pedido...\n");
+                if (record.topic().equals("order-created")) {
+                    System.out.println("Pedido [" + event.getOrderId() + "] recebido. Iniciando preparo...");
+                    
+                    event.setStatus("PREPARANDO");
+                    
+                    String json = mapper.writeValueAsString(event);
+                    producer.send(new ProducerRecord<>("pedido-aprovado", event.getOrderId(), json));
+                    System.out.println("Pedido aprovado! Enviado para o setor de pagamento.");
 
-                String json = mapper.writeValueAsString(event);
-
-                producer.send(new ProducerRecord<>("pedido-aprovado", event.getOrderId(), json));
-
-                System.out.println("Pedido aprovado e enviado para pagamento!");
-
+                } else if (record.topic().equals("pedido-cancelado")) {
+                    System.err.println("ALERTA DE CANCELAMENTO: Pedido [" + event.getOrderId() + "] cancelado.");
+                    System.err.println("Motivo: Pagamento recusado. Interrompendo produção imediatamente.");
+                }
             }
         }
     }
-
 }

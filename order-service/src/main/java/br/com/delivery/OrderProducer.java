@@ -1,5 +1,6 @@
 package br.com.delivery;
 
+import java.time.LocalDateTime;
 import java.util.Properties;
 import com.delivery.OrderEvent;
 import org.apache.kafka.clients.producer.KafkaProducer;
@@ -26,7 +27,8 @@ public class OrderProducer {
                 UUID.randomUUID().toString(),
                 "Ayler",
                 "PK pizzaria",
-                79.90
+                79.90,
+                LocalDateTime.now().toString()
         );
 
         String json = mapper.writeValueAsString(event);

@@ -1,2 +1,4 @@
-br\com\delivery\App.class
+br\com\delivery\OrderController.class
 br\com\delivery\OrderProducer.class
+br\com\delivery\App.class
+br\com\delivery\OrderApplication.class

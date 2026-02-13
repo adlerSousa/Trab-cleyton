@@ -14,7 +14,7 @@ import org.apache.kafka.common.serialization.StringSerializer;
 public class PayConsumer {
     public static void main(String[] args) throws Exception {
 
-        System.out.println("💳 Serviço de pagamento aguardando pedidos aprovados...");
+        System.out.println("Serviço de pagamento aguardando pedidos aprovados...");
 
         Properties props = new Properties();
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
@@ -27,7 +27,6 @@ public class PayConsumer {
 
         ObjectMapper mapper = new ObjectMapper();
 
-        // CONFIG DO PRODUCER (para avisar que foi pago)
         Properties prodProps = new Properties();
         prodProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
         prodProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
@@ -41,22 +40,21 @@ public class PayConsumer {
             for (ConsumerRecord<String, String> record : records) {
                 OrderEvent event = mapper.readValue(record.value(), OrderEvent.class);
 
-                System.out.println("\nProcessando pagamento do pedido:");
-                System.out.println("ID: " + event.getOrderId());
-                System.out.println("Cliente: " + event.getCustomerName());
-                System.out.println("Restaurante: " + event.getRestaurant());
-                System.out.println("Valor: R$ " + event.getAmount());
-                System.out.println("Pagamento aprovado!");
-                // Envia evento de pedido pago
-                String json = mapper.writeValueAsString(event);
+                if(event.getAmount() > 100) {
+                    System.out.println("Pagamento recusado para o pedido " + event.getOrderId() + " (valor acima do permitido)");
+                    event.setStatus("CANCELADO");
+                    
+                    String jsonAtt = mapper.writeValueAsString(event);
+                    ProducerRecord<String, String> cancelRecord = new ProducerRecord<>("pedido-cancelado", event.getOrderId(), jsonAtt);
+                    producer.send(cancelRecord);
+                } else {
+                    System.out.println("Pagamento aprovado para o pedido " + event.getOrderId());
+                    event.setStatus("PAGO");
 
-                ProducerRecord<String, String> paidRecord = new ProducerRecord<>("pedido-pago", event.getOrderId(),
-                        json);
-
-                producer.send(paidRecord);
-
-                System.out.println("Evento PEDIDO PAGO enviado para o Kafka!");
-
+                    String jsonAtt = mapper.writeValueAsString(event);
+                    ProducerRecord<String, String> paidRecord = new ProducerRecord<>("pedido-pago", event.getOrderId(), jsonAtt);
+                    producer.send(paidRecord);
+                }
             }
 
         }
