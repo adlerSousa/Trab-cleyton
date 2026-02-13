@@ -15,7 +15,7 @@ A comunicação entre os serviços é puramente assíncrona. Nenhum serviço con
 - **pedido-pago**: Publicado pelo payment-service após confirmar a transação.
 - **Finalização**: O delivery-service consome o evento de pagamento e despacha o entregador.
 
-## 🛠️ Tecnologias Utilizadas
+## Tecnologias Utilizadas
 - **Linguagem**: Java 20 (Record types, Modern Switch, etc.)
 - **Gerenciamento de Dependências**: Apache Maven
 - **Mensageria**: Apache Kafka (executando via Docker)
