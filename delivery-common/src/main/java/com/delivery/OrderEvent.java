@@ -5,16 +5,18 @@ public class OrderEvent {
     private String customerName;
     private String restaurant;
     private double amount;
+    private String status;
 
     // Construtor vazio (obrigatório para o Jackson/JSON)
     public OrderEvent() {}
 
     // Construtor completo
-    public OrderEvent(String orderId, String customerName, String restaurant, double amount) {
+    public OrderEvent(String orderId, String customerName, String restaurant, double amount, String status) {
         this.orderId = orderId;
         this.customerName = customerName;
         this.restaurant = restaurant;
         this.amount = amount;
+        this.status = status;
     }
 
     // Getters e Setters (importante ter os Setters para o Consumer ler o JSON)
@@ -26,4 +28,6 @@ public class OrderEvent {
     public void setRestaurant(String restaurant) { this.restaurant = restaurant; }
     public double getAmount() { return amount; }
     public void setAmount(double amount) { this.amount = amount; }
+    public String getStatus() { return status; }
+    public void setStatus(String status) { this.status = status; }
 }
