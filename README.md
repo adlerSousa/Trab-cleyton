@@ -72,7 +72,7 @@ A comunicação entre os serviços é puramente assíncrona. Nenhum serviço con
 ```text
 ├── delivery-common/      # Classe OrderEvent compartilhada
 ├── delivery-service/     # Consome 'pedido-pago'
-├── order-service/        # Produz 'order-created' (Ponto de entrada)
+├── order-service/        # API REST e produz 'order-created' (Ponto de entrada)
 ├── payment-service/      # Consome 'pedido-aprovado' e produz 'pedido-pago'
 ├── restaurant-service/   # Consome 'order-created' e produz 'pedido-aprovado'
 └── docker-compose.yml    # Infraestrutura do Kafka
