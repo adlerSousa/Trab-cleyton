@@ -1,3 +1,12 @@
+# Trabalho Final - Projeto de Sistemas de Software
+
+# Integrantes
+- Guilherme Cardoso Martins
+- Ayler Francisco Horta de Oliveira
+- Thobias Adriel Oliveira Dantas
+- Adler Amorim de Sousa
+- Lukian Borges Alintes
+
 # Delivery System - Kafka Pub/Sub Architecture
 
 Este projeto implementa uma Coreografia de Microserviços baseada na arquitetura Publish-Subscriber utilizando Apache Kafka. O sistema simula o fluxo completo de um pedido de delivery, desde a criação até a entrega final, garantindo o desacoplamento total entre os serviços.
