@@ -5,13 +5,17 @@ public class OrderEvent {
     private String customerName;
     private String restaurant;
     private double amount;
-    private String status;
+    private StatusPedido status;
+
+    public enum StatusPedido {
+       CRIADO, PREPARANDO, PAGO, CANCELADO, SAIU_PARA_ENTREGA, ENTREGUE
+    }
 
     // Construtor vazio (obrigatório para o Jackson/JSON)
     public OrderEvent() {}
 
     // Construtor completo
-    public OrderEvent(String orderId, String customerName, String restaurant, double amount, String status) {
+    public OrderEvent(String orderId, String customerName, String restaurant, double amount, StatusPedido status) {
         this.orderId = orderId;
         this.customerName = customerName;
         this.restaurant = restaurant;
@@ -28,6 +32,6 @@ public class OrderEvent {
     public void setRestaurant(String restaurant) { this.restaurant = restaurant; }
     public double getAmount() { return amount; }
     public void setAmount(double amount) { this.amount = amount; }
-    public String getStatus() { return status; }
-    public void setStatus(String status) { this.status = status; }
+    public StatusPedido getStatus() { return status; }
+    public void setStatus(StatusPedido status) { this.status = status; }
 }
